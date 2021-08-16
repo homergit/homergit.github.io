@@ -7,19 +7,6 @@
   });
 })();
 
-
-(function() {
-  var link = document.querySelector("a");
-  link.addEventListener("click", function() {
-    const toggleLink = link.classList.toggle;
-    toggleLink("is-active-link");
-
-    console.log('123123123')
-
-    setTimeout(function(){toggleLink("is-active-link");},2000);
-  });
-})();
-
 document.querySelectorAll("#nav li").forEach(function(navEl) {
   navEl.onclick = function() {
     toggleTab(this.id, this.dataset.target);
@@ -44,8 +31,49 @@ function toggleTab(selectedNav, targetId) {
   tabs.forEach(function(tab) {
     if (tab.id == targetId) {
       tab.style.display = "block";
+      tab.setAttribute("aria-active", "true");
     } else {
       tab.style.display = "none";
+      tab.setAttribute("aria-active", "false");
     }
   });
+}
+
+
+(function() {
+  const emailValidation = document.querySelector("#emailValidation");
+  const emailInput = document.querySelector("#email");
+  emailInput.addEventListener("blur", ({target}) => {
+    const enteredEmail = target.value;
+
+    emailValidation.setAttribute("aria-hidden", "false");
+
+    if (isEmailValid(enteredEmail)) {
+      emailValidation.innerHTML = enteredEmail + " email is valid, check please";
+
+      emailInput.setAttribute("aria-invalid", "false");
+      emailValidation.removeAttribute("role");
+
+      emailInput.classList.add("is-success");
+      emailInput.classList.remove("is-danger");
+      emailValidation.classList.add("is-success");
+      emailValidation.classList.remove("is-danger");
+    } else {
+      emailValidation.innerHTML = enteredEmail + " email is invalid";
+
+      emailInput.setAttribute("aria-invalid", "true");
+      emailValidation.setAttribute("role", "alert");
+
+      emailInput.classList.add("is-danger");
+      emailInput.classList.remove("is-success");
+      emailValidation.classList.add("is-danger");
+      emailValidation.classList.remove("is-success");
+    }
+  });
+})();
+
+
+function isEmailValid(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
 }
